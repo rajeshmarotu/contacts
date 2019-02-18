@@ -13,7 +13,7 @@ export default function homeReducer(state=initial_state,action){
       // const newData = state.contacts.push(action.payload.contacts)
       return {
         ...state,
-        
+
       }
 
     case actionTypes.LOAD_CONTACTS:
@@ -32,23 +32,21 @@ export default function homeReducer(state=initial_state,action){
         ...state,
         contacts:newData
       }
-      
-    case actionTypes.LOAD_A_CONTACT :
-      const data = action.payload.data;
-      // console.log(data)
-      return { ...state,editContactData:data,isLoaded:true }
-
-    case actionTypes.LOAD_A_CONTACT_ERROR:
-      return {...state,message:action.payload.message}
 
     case actionTypes.UPDATE_A_CONTACT:
       console.log('Update!')
-      console.log(action.payload.data)
-      return {...state}
+      const data = action.payload.data;
+      var newData = state.contacts.map(contact=>{
+        console.log(contact._id);
+        console.log(data._id);
+        return contact._id == data._id ? {data} : {contact}
+      })
+      console.log(newData);
+      return {...state,contacts:newData}
 
     case actionTypes.UPDATE_A_CONTACT_ERROR:
       return {...state,message:action.payload.message}
- 
+
     case 'ERROR':
       return state;
 

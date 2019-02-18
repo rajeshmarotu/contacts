@@ -40,7 +40,7 @@ router.post('/deleteContact/:id',(req,res,next)=>{
 	}
 })
 
-router.post('/loadAContact/:id',(req,res,next)=>{
+router.get('/loadAContact/:id',(req,res,next)=>{
 	try{
 		const id=req.params.id;
 		Contacts.findById(id,function(err,contact){
@@ -58,10 +58,10 @@ router.post('/loadAContact/:id',(req,res,next)=>{
 router.post('/updateAContact/:id',(req,res,next)=>{
 	try{
 		const id = req.params.id;
-		const data = req.query.data;
+		const data = req.body.data;
+		console.log(data);
 		Contacts.findByIdAndUpdate(id, data, {new: true}, function(err,contact){
 			if(err) throw err;
-			console.log(contact);
 			res.status(200).json({contactData:contact,status:true})
 
 		})

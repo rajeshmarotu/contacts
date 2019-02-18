@@ -52,9 +52,27 @@ export const deleteContact = (id) => {
   }
 }
 
+export const updateContact = ( id,data ) =>{
+  console.log("action");
+  console.log(id,data);
+	return (dispatch) => {
+		    axios.post('http://localhost:4000/contacts/updateAContact/'+id,{data:data}).then((res)=>{
+		      dispatch({
+		        type:actionTypes.UPDATE_A_CONTACT,
+		        payload:{
+		          data: res.data.contactData,
+              message:"Successfully edited!"
+		        }
+		      })
+		    }).catch((error)=>{
+          console.log(error);
+		    	dispatch({
+		    		type:actionTypes.UPDATE_A_CONTACT_ERROR,
+		    		payload:{
+		    			message:"Problem uploading contact details!"
+		    		}
+		    	})
+		    })
 
-export const editContact = (id) => {
-  return (dispatch) => {
-    console.log("editContact");
-  }
+	}
 }

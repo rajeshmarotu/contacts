@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { loadAContact, updateContact } from '../actions/edit.actions';
+import { updateContact } from '../actions/';
+import axios from 'axios';
 
 class Edit extends Component {
 	constructor(props){
@@ -11,8 +12,11 @@ class Edit extends Component {
 				person_name:"",
 				contact_number:"",
 				age:"",
-				location:""
+				location:"",
+				added_by:this.props.userId
+
 			},
+			loaded:false
 		}
 
 	}
@@ -21,38 +25,22 @@ class Edit extends Component {
 		// if(!this.props.location.state || !this.props.location.state.id) {
 		// 	return
 		// }else{
-			this.props.loadAContact(this.props.location.state.id);
+			this.loadCurrentContact(this.props.location.state.id);
+
 			console.log("mounting")
-			this.setState({{newData: this.props.contactData,id:this.props.location.state.id,newData:this.props.contactData})
-		// }		
+			this.setState({id:this.props.location.state.id})
+		// }
 	}
 
-	// componentDidMount(){
-	// 	console.log("Mounted!")
-	// 	console.log(this.props.contactData)
-	// 	// this.setState({newData:this.props.contactData})
-	// }
-
-	// componentWillReceiveProps(nextProps){
-	//   if(nextProps.isLoaded!==this.props.isLoaded){
-	//   	console.log(this.props.contactData)
-	//     this.setState({newData: this.props.contactData });
-	//   }
-	// }
-
-	componentWillUnmount(){
-		// this.setState({
-		// 	oldData:{
-		// 		person_name:"",
-		// 		contact_number:"",
-		// 		age:"",
-		// 		location:""
-		// 	},
-		// 	id:'',
-		// 	isLoaded:false
-		// })
-	}
-
+ loadCurrentContact =(id)=>{
+	 axios.get('http://localhost:4000/contacts/loadAContact/'+id).then((res)=>{
+		 console.log(res.data);
+		 this.setState({contactData:res.data.contactData,newData:res.data.contactData,loaded:true})
+	 }).catch((error)=>{
+		this.setState({error:'Some error while loading',loaded:false})
+	 })
+ }
+ 
 	onPersonNameChange(e){
 		let newData =  this.state.newData;
 		newData.person_name= e.target.value;
@@ -75,7 +63,7 @@ class Edit extends Component {
 		let newData = { ...this.state.newData }
 		newData.location= e.target.value;
 		this.setState({newData})
-		
+
 	}
 
 
@@ -85,10 +73,8 @@ class Edit extends Component {
 	    	contact_number:this.state.newData.contact_number,
 	    	age:this.state.newData.age,
 	    	location:this.state.newData.location,
-	    	added_by:this.props.user
+	    	added_by:this.props.userId
 	    }
-	    // console.log(this.state.newData)
-	    // console.log(data)
 
 		this.props.updateContact(this.state.id,data);
 
@@ -96,25 +82,24 @@ class Edit extends Component {
 	}
 
 	renderForm = () => {
-		console.log(this.props.contactData)
 		return (
             <div>
                 <form onSubmit={(e)=>this.onSubmit(e)}>
                     <div className="form-group">
                         <label>Person Name: </label>
-                        <input type="text" className="form-control" value={this.state.newData.person_name} placeholder={this.props.contactData.person_name} onChange={(e)=>this.onPersonNameChange(e)}/>
+                        <input type="text" className="form-control" value={ this.state.newData.person_name } placeholder={this.state.contactData.person_name} onChange={(e)=>this.onPersonNameChange(e)}/>
                     </div>
                     <div className="form-group">
                         <label>Contact Number: </label>
-                        <input type="text" className="form-control" value={this.state.newData.contact_number} placeholder={this.props.contactData.contact_number} onChange={(e)=>this.onContactNumberChange(e)}/>
+                        <input type="text" className="form-control" value={ this.state.newData.contact_number } placeholder={ this.state.contactData.contact_number} onChange={(e)=>this.onContactNumberChange(e)}/>
                     </div>
                     <div className="form-group">
                         <label>Age: </label>
-                        <input type="text" className="form-control" value={this.state.newData.age} placeholder={this.props.contactData.age} onChange={(e)=>this.onAgeChange(e)}/>
+                        <input type="text" className="form-control" value={ this.state.newData.age } placeholder={ this.state.contactData.age} onChange={(e)=>this.onAgeChange(e)}/>
                     </div>
                     <div className="form-group">
                         <label>Location: </label>
-                        <input type="text" className="form-control" value={this.state.newData.location} placeholder={this.props.contactData.location} onChange={(e)=>this.onLocationChange(e)}/>
+                        <input type="text" className="form-control" value={ this.state.newData.location } placeholder={ this.state.contactData.location} onChange={(e)=>this.onLocationChange(e)}/>
                     </div>
                     <div className="form-group">
                         <input type="submit" value="Add" className="btn btn-primary"/>
@@ -124,38 +109,35 @@ class Edit extends Component {
         )
 	}
     render() {
-    	const { location, contactData } = this.props;
+    	const { location } = this.props;
+			console.log(this.state.loaded);
     	// console.log(this.props.contactData)
     	// console.log(this.state.newData)
-    	console.log(this.props.isLoaded)
     	if(!location.state || !location.state.id){
     		return <h3>Invalid Request!</h3>
     	}
-    	if(!this.props.isLoaded){
+    	if(!this.state.loaded){
     		return <p>Loading....!!!</p>
-    	}else{
+    	}
+			if(this.state.loaded){
     		return (
     			<div>
     				{this.renderForm()}
     			</div>
     		)
     	}
-        
+
     }
 }
 
 const mapStateToProps = (state) => {
 	return {
-		user: state.homeReducer.user,
-		contactData : state.homeReducer.editContactData,
-		message: state.homeReducer.message,
-		isLoaded: state.homeReducer.isLoaded
+		userId: state.homeReducer.userId,
 	}
 }
 
 const mapDispatchToProps = (dispatch) => {
 	return {
-		loadAContact: (id) => dispatch(loadAContact(id)),
 		updateContact: (id,data) => dispatch(updateContact(id,data))
 	}
 }

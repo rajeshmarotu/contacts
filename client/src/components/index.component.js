@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import { Redirect, Link } from 'react-router-dom'
-import { loadContacts, deleteContact, editContact } from '../actions/';
+import { loadContacts, deleteContact} from '../actions/';
 import { connect } from 'react-redux';
 
 class Index extends Component {
@@ -21,10 +21,11 @@ class Index extends Component {
              state:{
                  id:id
               }
-            });	
+            });
 	}
 
     render() {
+			console.log(this.props.contacts);
         return (
             <div>
                 <p>Welcome to Index Component!!</p>
@@ -39,7 +40,7 @@ class Index extends Component {
 				        <th></th>
 				      </tr>
 				    </thead>
-				    <tbody>    
+				    <tbody>
 						{
 		                	this.props.contacts && this.props.contacts.length>0 && this.props.contacts.map((item,i)=>{
 		                		return(
@@ -58,7 +59,7 @@ class Index extends Component {
 							        <td>{item.location}</td>
 							        <td>
 							        	{
-							        		item.added_by != this.props.userId && (
+							        		item.added_by == this.props.userId && (
 							        			<div>
 							        				<button onClick={()=>this.editContact(`${item._id}`)}>Edit</button>
 							        				<button  onClick={()=>this.props.deleteContact(`${item._id}`)}>Delete</button>
@@ -67,9 +68,9 @@ class Index extends Component {
 							        		)
 							        	}
 							        </td>
-							      </tr> 
+							      </tr>
 		                		)
-		                		
+
 		                	})
 		                }
 				    </tbody>
@@ -90,7 +91,6 @@ const mapDispatchToProps = (dispatch) => {
 	return {
 		loadContacts : () => dispatch(loadContacts()),
 		deleteContact : (id) => dispatch(deleteContact(id)),
-		editContact : (id,person_name,contact_number,age,location,added_by) => dispatch(editContact())
 	}
 }
 

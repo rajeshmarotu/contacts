@@ -21,16 +21,13 @@ class App extends Component {
                 <li className="nav-item">
                   <Link to={'/create'} className="nav-link">Create</Link>
                 </li>
-                <li className="nav-item">
-                  <Link to={'/index'} className="nav-link">Index</Link>
-                </li>
               </ul>
             </div>
           </nav> <br/>
           <Switch>
+              <Route exact path='/' component={ Index } />
               <Route exact path='/create' component={ Create } />
-              <Route path='/edit/' component={ Edit } />
-              <Route path='/index' component={ Index } />
+              <Route exact path='/edit/' component={ Edit } />
           </Switch>
         </div>
       </Router>
